@@ -29,7 +29,7 @@ import com.kododake.aabrowser.model.UserAgentProfile
 object UserAgentManager {
     private const val DESKTOP_INITIAL_SCALE_PERCENT = 100
     private const val DESKTOP_BITNESS = 64
-    private const val CHROME_VERSION = "149.0.0.0"
+    private const val CHROME_VERSION = "154.0.0.0"
     private const val FIREFOX_VERSION = "155.0"
     private const val SAMSUNG_VERSION = "28.0"
     private const val SAMSUNG_CHROMIUM_VERSION = "130.0.0.0"
