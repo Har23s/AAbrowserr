@@ -36,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Devices
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LockReset
 import androidx.compose.material.icons.rounded.Security
@@ -59,6 +60,7 @@ import com.kododake.aabrowser.model.UserAgentProfile
 import com.kododake.aabrowser.ui.compose.components.ExpressiveListItem
 import com.kododake.aabrowser.ui.compose.components.ListGroupPosition
 import com.kododake.aabrowser.ui.compose.components.bouncyClickable
+import com.kododake.aabrowser.ui.compose.screens.dialogs.CustomUserAgentDialog
 import com.kododake.aabrowser.ui.compose.screens.dialogs.ExpressiveConfirmationDialog
 import com.kododake.aabrowser.ui.compose.screens.dialogs.ExpressiveSingleChoiceDialog
 import com.kododake.aabrowser.web.SslErrorHandlerHelper
@@ -67,11 +69,14 @@ import com.kododake.aabrowser.web.SslErrorHandlerHelper
 fun PrivacyAndAboutComposable(
     context: Context,
     onDrmL3EnforcerChanged: () -> Unit = {},
+    onUserAgentChanged: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var userAgent by remember { mutableStateOf(BrowserPreferences.getUserAgentProfile(context)) }
+    var customUserAgent by remember { mutableStateOf(BrowserPreferences.getCustomUserAgent(context)) }
     var drmL3Enabled by remember { mutableStateOf(BrowserPreferences.isDrmL3EnforcerEnabled(context)) }
     var showUaDialog by remember { mutableStateOf(false) }
+    var showCustomUaDialog by remember { mutableStateOf(false) }
     var showClearCookiesDialog by remember { mutableStateOf(false) }
     var showClearPermissionsDialog by remember { mutableStateOf(false) }
 
@@ -90,6 +95,17 @@ fun PrivacyAndAboutComposable(
             position = ListGroupPosition.Top,
             onClick = { showUaDialog = true }
         )
+
+        if (userAgent == UserAgentProfile.CUSTOM) {
+            Spacer(Modifier.height(3.dp))
+            ExpressiveListItem(
+                headline = stringResource(R.string.settings_user_agent_custom_hint),
+                supportingText = customUserAgent.ifBlank { stringResource(R.string.settings_user_agent_custom_empty_fallback) },
+                leadingIcon = Icons.Rounded.Edit,
+                position = ListGroupPosition.Middle,
+                onClick = { showCustomUaDialog = true }
+            )
+        }
 
         Spacer(Modifier.height(3.dp))
 
@@ -197,13 +213,31 @@ fun PrivacyAndAboutComposable(
             items = UserAgentProfile.entries,
             selectedItem = userAgent,
             onItemSelected = { profile ->
-                userAgent = profile
-                BrowserPreferences.setUserAgentProfile(context, profile)
+                if (profile != userAgent) {
+                    userAgent = profile
+                    BrowserPreferences.setUserAgentProfile(context, profile)
+                    onUserAgentChanged()
+                }
+                if (profile == UserAgentProfile.CUSTOM) {
+                    showCustomUaDialog = true
+                }
             },
             onDismiss = { showUaDialog = false },
             itemLabel = { profile ->
                 stringResource(profile.titleRes)
             }
+        )
+    }
+
+    if (showCustomUaDialog) {
+        CustomUserAgentDialog(
+            initialValue = customUserAgent,
+            onConfirm = { newUa ->
+                BrowserPreferences.setCustomUserAgent(context, newUa)
+                customUserAgent = BrowserPreferences.getCustomUserAgent(context)
+                onUserAgentChanged()
+            },
+            onDismiss = { showCustomUaDialog = false }
         )
     }
 
