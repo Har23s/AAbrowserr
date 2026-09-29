@@ -127,6 +127,13 @@ Every contribution makes AA Browser better!
       </a><br />
       <sub>Desktop site UA handling</sub>
     </td>
+    <td align="center" valign="top" width="20%">
+      <a href="https://github.com/breakzplatform">
+        <img src="https://github.com/breakzplatform.png?s=100" width="60" alt="breakzplatform"/><br />
+        <sub><b>breakzplatform</b></sub>
+      </a><br />
+      <sub>Custom UA handling</sub>
+    </td>
   </tr>
 </table>
 
